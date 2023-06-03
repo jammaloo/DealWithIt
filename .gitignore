@@ -132,3 +132,7 @@ dist
 # Jetbrains
 
 .idea
+
+# Misc
+
+.DS_Store
