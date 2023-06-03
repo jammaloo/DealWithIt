@@ -1,11 +1,10 @@
 (async () => {
+    let isFirstResize = true;
 
     const leftEyeLandmark = 36;
     const rightEyeLandmark = 45;
     const glassesPaddingPercentage = 0.8;
 
-    const leftEye = document.getElementById('leftEye');
-    const rightEye = document.getElementById('rightEye');
     const glasses = document.getElementById('glasses');
 
     const getLineLength = (p1, p2) => {
@@ -37,24 +36,53 @@
         return deg;
     }
 
+    const debounce = (cb, delay = 1000) => {
+        let wait = false;
+
+        return (...args) => {
+            if (wait) {
+                return;
+            }
+
+            wait = true;
+            setTimeout(() => {
+                wait = false;
+                cb(...args);
+            }, delay);
+        }
+    };
+
     await faceapi.loadTinyFaceDetectorModel('../models');
     await faceapi.loadFaceLandmarkTinyModel('../models');
     const input = document.getElementById('image');
 
     const detectionsWithLandmarks = await faceapi.detectAllFaces(input, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks(true);
-    const detectionsWithLandmarksForSize = faceapi.resizeResults(detectionsWithLandmarks, { width: input.width, height: input.height })
-    const eyePositions = [
-        [detectionsWithLandmarksForSize[0].landmarks.positions[leftEyeLandmark].x, detectionsWithLandmarksForSize[0].landmarks.positions[leftEyeLandmark].y],
-        [detectionsWithLandmarksForSize[0].landmarks.positions[rightEyeLandmark].x, detectionsWithLandmarksForSize[0].landmarks.positions[rightEyeLandmark].y],
-    ];
 
-    const lineLength = getLineLength(eyePositions[0], eyePositions[1]);
-    const glassesRotation = calculateAngleDegrees(eyePositions[0], eyePositions[1]);
-    const glassesWidth = lineLength * (1 + glassesPaddingPercentage)
-    const glassesOffset = glassesWidth * (glassesPaddingPercentage / 4);
+    const resizeHandler = () => {
+        console.log('resize');
+        const detectionsWithLandmarksForSize = faceapi.resizeResults(detectionsWithLandmarks, { width: input.width, height: input.height })
+        const eyePositions = [
+            [detectionsWithLandmarksForSize[0].landmarks.positions[leftEyeLandmark].x, detectionsWithLandmarksForSize[0].landmarks.positions[leftEyeLandmark].y],
+            [detectionsWithLandmarksForSize[0].landmarks.positions[rightEyeLandmark].x, detectionsWithLandmarksForSize[0].landmarks.positions[rightEyeLandmark].y],
+        ];
 
-    glasses.style = `width: ${glassesWidth}px; left: ${eyePositions[0][0] - glassesOffset}px; top: ${eyePositions[0][1]}px; transform: rotate(${glassesRotation}deg)`;
+        const lineLength = getLineLength(eyePositions[0], eyePositions[1]);
+        const glassesRotation = calculateAngleDegrees(eyePositions[0], eyePositions[1]);
+        const glassesWidth = lineLength * (1 + glassesPaddingPercentage)
+        const glassesOffset = glassesWidth * (glassesPaddingPercentage / 4);
 
-    leftEye.style = `left: ${eyePositions[0][0]}px; top: ${eyePositions[0][1]}px;`;
-    rightEye.style = `left: ${eyePositions[1][0]}px; top: ${eyePositions[1][1]}px;`;
+        glasses.style = `
+        width: ${glassesWidth}px;
+        left: ${eyePositions[0][0] - glassesOffset}px;
+        top: ${eyePositions[0][1]}px;
+        transform: rotate(${glassesRotation}deg);
+        ${isFirstResize ? '' : 'transition: 1s all;'}`;
+        isFirstResize = false;
+    };
+
+    const debounced = debounce(resizeHandler);
+    window.addEventListener('resize', () => {
+        debounced();
+    });
+    resizeHandler();
 })();
