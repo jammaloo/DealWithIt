@@ -1,9 +1,28 @@
+body {
+    margin: 0;
+    padding: 0;
+    text-align: center;
+}
+
+.center {
+    display: flex;
+    justify-content: center;
+}
+
 .overlay {
     position: relative;
 }
 
-#image {
+#glasses {
     position: absolute;
+    top: -1000px;
+    left: 50vw;
+    transition: 1s top;
+}
+
+#image {
+    max-width: 100vw;
+    max-height: 100vh;
 }
 
 .eye {
