@@ -14,7 +14,7 @@
     const dealWithIt = document.getElementById('dealWithIt');
 
     document.getElementById('customize').addEventListener('click', (e) => {
-        window.location.hash = prompt('Please enter the URL of the image', input.src);
+        window.location.hash = prompt('Please enter the URL of the image', input.src) || "";
         e.stopPropagation();
         e.preventDefault();
         return false;
