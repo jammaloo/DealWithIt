@@ -10,14 +10,12 @@ body {
     justify-content: center;
 }
 
-.overlay {
+#overlay {
     position: relative;
 }
 
-#glasses {
+.glasses {
     position: absolute;
-    top: -1000px;
-    left: 50vw;
     transition: 1s top;
 }
 
