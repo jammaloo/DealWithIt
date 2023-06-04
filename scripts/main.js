@@ -1,14 +1,37 @@
 (async () => {
+    const imageUrl = 'images/example.jpg';
     let isFirstResize = true;
 
     const leftEyeLandmark = 36;
     const rightEyeLandmark = 45;
     const glassesPaddingPercentage = 0.8;
 
+    const input = document.getElementById('image');
     const glasses = document.getElementById('glasses');
 
+    document.getElementById('customize').addEventListener('click', (e) => {
+        let inputImageUrl = prompt('Please enter the URL of the image', input.src);
+        window.location.hash = inputImageUrl;
+        e.stopPropagation();
+        e.preventDefault();
+        return false;
+    });
+
+    const parseImageSrc = (inputImageUrl = "") => {
+        let targetUrl = imageUrl;
+        if (inputImageUrl) {
+            try {
+                new URL(inputImageUrl);
+                targetUrl = inputImageUrl;
+            } catch (e) {
+                alert('Invalid URL provided');
+            }
+        }
+        input.src = targetUrl;
+    };
+
+
     const getLineLength = (p1, p2) => {
-        console.log(p1, p2);
         return Math.round(
             Math.sqrt(
                 ((p2[0] - p1[0]) ** 2) +
@@ -52,37 +75,44 @@
         }
     };
 
-    await faceapi.loadTinyFaceDetectorModel('../models');
-    await faceapi.loadFaceLandmarkTinyModel('../models');
-    const input = document.getElementById('image');
+    const init = () => {
+        parseImageSrc(window.location.hash.substring(1));
+    };
 
-    const detectionsWithLandmarks = await faceapi.detectAllFaces(input, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks(true);
+    input.addEventListener('load', async () => {
+        await faceapi.loadTinyFaceDetectorModel('../models');
+        await faceapi.loadFaceLandmarkTinyModel('../models');
 
-    const resizeHandler = () => {
-        console.log('resize');
-        const detectionsWithLandmarksForSize = faceapi.resizeResults(detectionsWithLandmarks, { width: input.width, height: input.height })
-        const eyePositions = [
-            [detectionsWithLandmarksForSize[0].landmarks.positions[leftEyeLandmark].x, detectionsWithLandmarksForSize[0].landmarks.positions[leftEyeLandmark].y],
-            [detectionsWithLandmarksForSize[0].landmarks.positions[rightEyeLandmark].x, detectionsWithLandmarksForSize[0].landmarks.positions[rightEyeLandmark].y],
-        ];
+        const detectionsWithLandmarks = await faceapi.detectAllFaces(input, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks(true);
 
-        const lineLength = getLineLength(eyePositions[0], eyePositions[1]);
-        const glassesRotation = calculateAngleDegrees(eyePositions[0], eyePositions[1]);
-        const glassesWidth = lineLength * (1 + glassesPaddingPercentage)
-        const glassesOffset = glassesWidth * (glassesPaddingPercentage / 4);
+            const detectionsWithLandmarksForSize = faceapi.resizeResults(detectionsWithLandmarks, { width: input.width, height: input.height })
+            const eyePositions = [
+                [detectionsWithLandmarksForSize[0].landmarks.positions[leftEyeLandmark].x, detectionsWithLandmarksForSize[0].landmarks.positions[leftEyeLandmark].y],
+                [detectionsWithLandmarksForSize[0].landmarks.positions[rightEyeLandmark].x, detectionsWithLandmarksForSize[0].landmarks.positions[rightEyeLandmark].y],
+            ];
 
-        glasses.style = `
+            const lineLength = getLineLength(eyePositions[0], eyePositions[1]);
+            const glassesRotation = calculateAngleDegrees(eyePositions[0], eyePositions[1]);
+            const glassesWidth = lineLength * (1 + glassesPaddingPercentage)
+            const glassesOffset = glassesWidth * (glassesPaddingPercentage / 4);
+
+            glasses.style = `
         width: ${glassesWidth}px;
         left: ${eyePositions[0][0] - glassesOffset}px;
         top: ${eyePositions[0][1]}px;
         transform: rotate(${glassesRotation}deg);
         ${isFirstResize ? '' : 'transition: 1s all;'}`;
-        isFirstResize = false;
-    };
+            isFirstResize = false;
+    });
 
-    const debounced = debounce(resizeHandler);
+    init();
+
+    window.addEventListener('hashchange', () => {
+        init();
+    });
+
+    const debounced = debounce(init);
     window.addEventListener('resize', () => {
         debounced();
     });
-    resizeHandler();
 })();
