@@ -1,5 +1,6 @@
 (async () => {
     const imageUrl = 'images/example.jpg';
+    const proxyPath = 'img.php?url=';
     let isFirstResize = true;
 
     const leftEyeLandmark = 36;
@@ -10,8 +11,7 @@
     const glasses = document.getElementById('glasses');
 
     document.getElementById('customize').addEventListener('click', (e) => {
-        let inputImageUrl = prompt('Please enter the URL of the image', input.src);
-        window.location.hash = inputImageUrl;
+        window.location.hash = prompt('Please enter the URL of the image', input.src);
         e.stopPropagation();
         e.preventDefault();
         return false;
@@ -27,7 +27,7 @@
                 alert('Invalid URL provided');
             }
         }
-        input.src = targetUrl;
+        input.src = proxyPath + encodeURIComponent(targetUrl);
     };
 
 
