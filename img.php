@@ -6,11 +6,8 @@ if (!$url || substr($url, 0, 4) != 'http') {
     die('Please, inform URL');
 }
 
-$imgInfo = getimagesize( $url );
-
-if (stripos($imgInfo['mime'], 'image/') === false) {
-    die('Invalid image file');
+if(filter_var($url, FILTER_VALIDATE_URL) === FALSE) {
+   die('Invalid URL');
 }
 
-header("Content-type: ".$imgInfo['mime']);
 readfile( $url );
