@@ -39,3 +39,21 @@ body {
             -1px 1px 0 #000,
             1px 1px 0 #000;
 }
+
+h1 {
+    position: absolute;
+    bottom: 20px;
+    font-size: 10vh;
+    color: white;
+    text-shadow:
+            -1px -1px 0 #000,
+            1px -1px 0 #000,
+            -1px 1px 0 #000,
+            1px 1px 0 #000,
+            2px 2px 0 #E40303,
+            4px 4px 0 #FF8C00,
+            6px 6px 0 #FFED00,
+            8px 8px 0 #008026,
+            10px 10px 0 #24408E,
+            12px 12px 0 #732982;
+}
