@@ -41,7 +41,7 @@ body {
 
 h1 {
     position: absolute;
-    bottom: -400px;
+    bottom: -100vh;
     transition: all 1.1s;
     font-size: 10vh;
     color: white;
