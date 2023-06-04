@@ -3,6 +3,7 @@ body {
     padding: 0;
     text-align: center;
     background-color: #2b2a33;
+    overflow: hidden;
 }
 
 .center {
@@ -40,7 +41,8 @@ body {
 
 h1 {
     position: absolute;
-    bottom: 20px;
+    bottom: -400px;
+    transition: all 1.1s;
     font-size: 10vh;
     color: white;
     text-shadow:

@@ -11,6 +11,7 @@
 
     const input = document.getElementById('image');
     const glassesContainer = document.getElementById('overlay');
+    const dealWithIt = document.getElementById('dealWithIt');
 
     document.getElementById('customize').addEventListener('click', (e) => {
         window.location.hash = prompt('Please enter the URL of the image', input.src);
@@ -125,6 +126,7 @@
         ${isFirstResize ? '' : 'transition: 1s all;'}`;
             });
             isFirstResize = false;
+            dealWithIt.style= 'bottom: 20px;';
         }, 100);
     });
 
