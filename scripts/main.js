@@ -30,7 +30,7 @@
                 alert('Invalid URL provided');
             }
         }
-        input.src = proxyPath + encodeURIComponent(targetUrl);
+        input.src = targetUrl.substr(0, 4) === 'http' ? proxyPath + encodeURIComponent(targetUrl) : targetUrl;
     };
 
 
