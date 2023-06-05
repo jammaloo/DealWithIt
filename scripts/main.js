@@ -4,6 +4,8 @@
     const proxyPath = 'img.php?url=';
     let glassesList = [];
     let isFirstResize = true;
+    let isLoading = false;
+    let hasLoaded = false;
 
     const leftEyeLandmark = 36;
     const rightEyeLandmark = 45;
@@ -112,11 +114,24 @@
 
     const init = () => {
         parseImageSrc(window.location.hash.substring(1));
+        processImage();
     };
 
-    input.addEventListener('load', async () => {
-        await faceapi.loadSsdMobilenetv1Model('./models');
-        await faceapi.loadFaceLandmarkModel('./models');
+    input.addEventListener('load', () => {
+        processImage();
+    });
+
+    const processImage = async () => {
+        if (isLoading) {
+            return;
+        }
+        if (!hasLoaded) {
+            isLoading = true;
+            await faceapi.loadSsdMobilenetv1Model('./models');
+            await faceapi.loadFaceLandmarkModel('./models');
+            isLoading = false;
+            hasLoaded = true;
+        }
 
         const detectionsWithLandmarks = await faceapi.detectAllFaces(input).withFaceLandmarks();
 
@@ -160,7 +175,7 @@
             isFirstResize = false;
             dealWithIt.style= 'bottom: 20px;';
         }, 100);
-    });
+    };
 
     init();
 
@@ -168,7 +183,7 @@
         init();
     });
 
-    const debounced = debounce(init);
+    const debounced = debounce(processImage);
     window.addEventListener('resize', () => {
         debounced();
     });
