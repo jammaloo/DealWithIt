@@ -43,6 +43,9 @@ h1 {
     position: absolute;
     bottom: -100vh;
     transition: all 1.1s;
+}
+
+.coolAssText {
     font-size: 10vh;
     color: white;
     text-shadow:
@@ -56,4 +59,16 @@ h1 {
             8px 8px 0 #008026,
             10px 10px 0 #24408E,
             12px 12px 0 #732982;
+}
+
+#dropZone {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 255, 0, 0.5);
+    display: none;
+    justify-content: center;
+    align-items: center;
 }

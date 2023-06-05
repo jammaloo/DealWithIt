@@ -12,9 +12,41 @@
     const input = document.getElementById('image');
     const glassesContainer = document.getElementById('overlay');
     const dealWithIt = document.getElementById('dealWithIt');
+    const dropZone = document.getElementById('dropZone');
+
+    document.addEventListener('dragenter', () => {
+        dropZone.style = "display: flex;"
+    });
+
+    dropZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+    });
+
+    const toBase64 = file => new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+    });
+
+    dropZone.addEventListener('drop', async (e) => {
+        dropZone.style = "";
+        // Prevent default behavior (Prevent file from being opened)
+        e.preventDefault();
+
+        let file;
+
+        if (e.dataTransfer.items) {
+            file = e.dataTransfer.items[0].getAsFile();
+        } else {
+            file = e.dataTransfer.files[0];
+        }
+        input.src = await toBase64(file);
+    });
 
     document.getElementById('customize').addEventListener('click', (e) => {
-        window.location.hash = prompt('Please enter the URL of the image', input.src) || "";
+        const placeholderUrl = input.src.substr(0, 5) === 'data:' ? '' : input.src;
+        window.location.hash = prompt('Please enter the URL of the image', placeholderUrl) || "";
         e.stopPropagation();
         e.preventDefault();
         return false;
