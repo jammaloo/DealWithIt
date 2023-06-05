@@ -115,10 +115,10 @@
     };
 
     input.addEventListener('load', async () => {
-        await faceapi.loadTinyFaceDetectorModel('./models');
-        await faceapi.loadFaceLandmarkTinyModel('./models');
+        await faceapi.loadSsdMobilenetv1Model('./models');
+        await faceapi.loadFaceLandmarkModel('./models');
 
-        const detectionsWithLandmarks = await faceapi.detectAllFaces(input, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks(true);
+        const detectionsWithLandmarks = await faceapi.detectAllFaces(input).withFaceLandmarks();
 
         const detectionsWithLandmarksForSize = faceapi.resizeResults(detectionsWithLandmarks, { width: input.width, height: input.height })
 
